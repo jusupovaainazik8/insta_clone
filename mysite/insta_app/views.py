@@ -28,10 +28,17 @@ class LogoutView(APIView):
         except Exception:
             return Response(status=400)
 
+
 class UserProfileViewSet(viewsets.ModelViewSet):
-    queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return UserProfile.objects.filter(id=self.request.user.id)
+        return UserProfile.objects.all()
+
+
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
